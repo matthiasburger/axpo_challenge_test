@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Measurement Visualization{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-12">
+                <h4>Measurement Visualization</h4>
+    </div>
+
+    <div class="col-md-4">
+
+        <div>
+        {% from "_formhelpers.html" import render_field %}
+
+        <form method="POST" action="{{ url_for('signal_app.measurement_visualization') }}" role="form">
+            {{ form.hidden_tag() }}
+
+            <div class="col-md-12">
+            {{ render_field(form.asset_ids, class="form-control") }}
+                </div>
+                        <div class="col-md-12">
+            {{ render_field(form.signal_ids, class="form-control") }}
+                                                                     </div>
+
+                        <div class="col-md-12">
+            {{ render_field(form.from_date, class="form-control") }}
+                             </div>
+                        <div class="col-md-12">
+            {{ render_field(form.to_date, class="form-control") }}
+                                         </div>
+            <div>
+                <button class="btn btn-primary" type="submit">Filter</button>
+            </div>
+     </form>
+    </div>
+    </div>
+
+    <div class="col-md-8">
+
+{% if chart_data %}
+<div id="chartContainer" style="height: 300px; width: 100%;"></div>
+
+<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script>
+
+    window.onload = function () {
+        var chart = new CanvasJS.Chart("chartContainer",
+        {
+          title:{
+            text: ""
+          },
+          axisX:{
+                  valueFormatString: "MMM-YYYY"
+          },
+
+          axisY: {
+                  valueFormatString: "0.0#"
+          },
+
+          data: [
+            {% for signal_id, data_rows in chart_data.data_rows.items() %}
+            {
+                label: '{{ signal_id }}',
+                type: "line",
+                lineThickness: 2,
+                        dataPoints:
+                        [
+                             {% for data_row in data_rows %}
+
+                                {
+                                    x:  new Date("{{ data_row["x"]}}"),
+                                    y: {{ data_row["y"]}},
+                                },
+
+                            {% endfor %}
+                        ]
+
+                        },
+
+                        {% endfor %}
+                    ],
+
+        });
+
+    chart.render();
+    }
+
+
+</script>
+{% endif %}
+    </div>
+</div>
+
+<script>
+    let asset_select = document.getElementById('asset_ids');
+    let signal_select = document.getElementById('signal_ids');
+
+    load_signals = function(x) {
+        var selected = [];
+        for (var option of asset_select.options) {
+            if (option.selected) {
+                selected.push(option.value);
+            }
+        }
+        if (selected.length <= 0)
+            return;
+
+        fetch('/signal_list/' + selected).then(function(response){
+            response.json().then(function(data){
+                let optionHTML = '';
+                for (let signal of data.signals){
+                    if (x.includes(signal.id.toString())) {
+                        optionHTML += '<option value="' + signal.id + '" selected>'+signal.name+'</option>';
+                    }
+                    else {
+                        optionHTML += '<option value="' + signal.id + '">'+signal.name+'</option>';
+                    }
+                }
+                signal_select.innerHTML = optionHTML;
+            })
+        });
+    }
+
+    asset_select.onchange = function(){ load_signals([]); }
+    {% if form.signal_ids.data %}
+        load_signals({{form.signal_ids.data|safe}});
+    {% else %}
+        load_signals([]);
+    {% endif %}
+
+</script>
+
+{% endblock %}

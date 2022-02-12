@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Asset Creation{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="offset-md2 col-md-8">
+        <h4>Asset Creation/Update</h4>
+
+        {% from "_formhelpers.html" import render_field %}
+
+        <form method="POST" action="{{ url_for('signal_app.asset') }}" role="form">
+            {{ form.hidden_tag() }}
+
+            {{ render_field(form.asset_id, class="form-control") }}
+            {{ render_field(form.latitude, class="form-control") }}
+            {{ render_field(form.longitude, class="form-control") }}
+            {{ render_field(form.description, class="form-control") }}
+
+            <div>
+                <button class="btn btn-primary" type="submit">Save</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<div id="visualization-data">
+
+</div>
+
+
+{% endblock %}
