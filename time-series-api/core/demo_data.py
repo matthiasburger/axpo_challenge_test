@@ -3,16 +3,23 @@ import json
 
 class DemoDataFileReader:
     """
-        This class reads a serialized list of data and converts them to a list of python-data-objects
-        Works with json and works with (extremely) simple csv, pipe-separated
+    This class reads a serialized list of data and converts them to a list of python-data-objects
+    Works with json and works with (extremely) simple csv, pipe-separated
     """
-    def __init__(self, file_path, target_class):
-        self.file_path = str(file_path)
+    def __init__(self, file_path: str, target_class: type):
+        """
+        initializes a new instance of DemoDataFileReader
+        :param file_path: the path where the file can be found
+        :param target_class: the type the items can be deserialized
+        """
+        self.file_path = file_path
         self.target_class = target_class
 
-    def _from_json(self, options):
+    def _from_json(self, options: dict):
         """
-            quick and dirty 'json-to-object'-deserializer
+        quick and dirty 'json-to-object'-deserializer
+        :param options: (optional): {'new_property_name', 'old_property_name'}
+        :return: a list of objects from specified type
         """
         with open(self.file_path, 'r') as file:
             data = file.read().replace('\n', '')
@@ -26,9 +33,11 @@ class DemoDataFileReader:
 
                 yield self.target_class(**obj)
 
-    def _from_csv(self, options):
+    def _from_csv(self, options: dict):
         """
-            quick and dirty 'csv-to-object'-deserializer
+        quick and dirty 'csv-to-object'-deserializer
+        :param options: (required): {'property_name', lambda[x]: x[0]}
+        :return: a list of objects from specified type
         """
         if not options:
             raise Exception("please provide some options for {'property_name', lambda[x]: x[0]}")
@@ -48,9 +57,14 @@ class DemoDataFileReader:
 
                 yield target_object
 
-    def get_objects(self, options):
+    def get_objects(self, options: dict):
         """
-            deserializes the file and returns the result as a list of classes
+        deserializes the file and returns the result as a list of classes
+
+        :param options: dependent on file-type the dictionary with options
+            - for csv (required): {'property_name', lambda[x]: x[0]}
+            - for json (optional): {'new_property_name', 'old_property_name'}
+        :return: a list of objects from specified type
         """
         file_type = self.file_path.split('.')[-1]
 

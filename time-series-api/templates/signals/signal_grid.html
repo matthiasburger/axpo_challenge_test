@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Signal Creation{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h4>Signal List</h4>
+            (back to <a href="{{ url_for('signal_app.measurement_visualization') }}">startpage</a>)
+            (<a href="{{ url_for('signal_app.signal', signal_id=0) }}">add a new signal</a>)
+
+        {% from "_formhelpers.html" import render_field %}
+        <div class="container">
+
+             <div class="row" style="border-bottom: 1px solid black;">
+                    <div class="col-sm-2">Signal ID</div>
+                    <div class="col-sm-3">Signal Name</div>
+                    <div class="col-sm-2">Description</div>
+                    <div class="col-sm-2">Unit</div>
+                    <div class="col-sm-1">Delete</div>
+                    <div class="col-sm-1">Edit</div>
+                </div>
+
+            {% for entry in form.entries %}
+                <div class="row">
+                    <div class="col-sm-2">{{entry.signal_id}}</div>
+                    <div class="col-sm-3">{{entry.signal_name}}</div>
+                    <div class="col-sm-2">{{entry.asset.description}}</div>
+                    <div class="col-sm-2">{{entry.unit}}</div>
+                    <div class="col-sm-1"><a href="{{ url_for('signal_app.delete_signal', signal_id=entry.signal_id) }}">delete</a></div>
+                    <div class="col-sm-1"><a href="{{ url_for('signal_app.signal', signal_id=entry.signal_id) }}">edit</a></div>
+                </div>
+        {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Signal Creation{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="offset-md2 col-md-8">
+        <h4>Signal Creation/Update</h4> (back to <a href="{{ url_for('signal_app.signal_grid') }}">signal-grid</a>)
+
+        {% from "_formhelpers.html" import render_field %}
+
+        <form method="POST" action="{{ url_for('signal_app.signal', signal_id=form.signal_id.data) }}" role="form">
+            {{ form.hidden_tag() }}
+
+            {{ render_field(form.signal_id, class="form-control") }}
+            {{ render_field(form.signal_name, class="form-control") }}
+            {{ render_field(form.signal_gid, class="form-control") }}
+            {{ render_field(form.asset_id, class="form-control") }}
+            {{ render_field(form.unit, class="form-control") }}
+
+            <div>
+                <button class="btn btn-primary" type="submit">Save</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

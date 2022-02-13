@@ -5,7 +5,7 @@
 {% block content %}
 <div class="row">
     <div class="col-sm-12">
-                <h4>Measurement Visualization</h4>
+        <h4>Measurement Visualization</h4>
     </div>
 
     <div class="col-md-4">
@@ -17,26 +17,30 @@
             {{ form.hidden_tag() }}
 
             <div class="col-md-12">
-            {{ render_field(form.asset_ids, class="form-control") }}
-                </div>
-                        <div class="col-md-12">
-            {{ render_field(form.signal_ids, class="form-control") }}
-                                                                     </div>
-
-                        <div class="col-md-12">
-            {{ render_field(form.from_date, class="form-control") }}
-                             </div>
-                        <div class="col-md-12">
-            {{ render_field(form.to_date, class="form-control") }}
-                                         </div>
+                {{ render_field(form.asset_ids, class="form-control") }}
+                <a href="{{ url_for('signal_app.asset') }}">manage assets</a>
+            </div>
+            <div class="col-md-12">
+                {{ render_field(form.signal_ids, class="form-control") }}
+                <a href="{{ url_for('signal_app.signal_grid') }}">manage signals</a>
+            </div>
+            <div class="col-md-12">
+                {{ render_field(form.from_date, class="form-control") }}
+            </div>
+            <div class="col-md-12">
+                {{ render_field(form.to_date, class="form-control") }}
+            </div>
             <div>
-                <button class="btn btn-primary" type="submit">Filter</button>
+                <button class="btn btn-primary" type="submit" name="action" value="Filter">Filter</button>
+                <button class="btn btn-primary"  type="submit" name="action" value="Export">Export</button>
             </div>
      </form>
     </div>
     </div>
 
     <div class="col-md-8">
+
+        <a href="{{ url_for('signal_app.import_data') }}">import demo-data</a>
 
 {% if chart_data %}
 <div id="chartContainer" style="height: 300px; width: 100%;"></div>
@@ -51,7 +55,7 @@
             text: ""
           },
           axisX:{
-                  valueFormatString: "MMM-YYYY"
+                  valueFormatString: "DD.MM.YYYY"
           },
 
           axisY: {
@@ -61,7 +65,8 @@
           data: [
             {% for signal_id, data_rows in chart_data.data_rows.items() %}
             {
-                label: '{{ signal_id }}',
+                showInLegend: true,
+                legendText: '{{ signal_id }}',
                 type: "line",
                 lineThickness: 2,
                         dataPoints:

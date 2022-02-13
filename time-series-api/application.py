@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from flask_migrate import Migrate, upgrade
 
 db = SQLAlchemy()
 
@@ -17,6 +17,10 @@ def create_app(**config_overrides):
     # initialize database
     db.init_app(app)
     migrate = Migrate(app, db)
+
+    # running upgrade
+    with app.app_context():
+        upgrade()
 
     # import blueprints
     from signals.views import signal_app

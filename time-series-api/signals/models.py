@@ -1,8 +1,20 @@
-from application import db
+from decimal import Decimal
+from datetime import datetime
+
 from sqlalchemy.orm import relationship
 
+from application import db
+from core.base_entity_types import Entity
 
-class Signal(db.Model):
+# noinspection PyUnresolvedReferences
+# used to patch json.dumps
+import json_fix
+
+
+class Signal(db.Model, Entity):
+    """
+    Signal-entity
+    """
     signal_id = db.Column(db.Integer, primary_key=True, autoincrement=False)
     signal_gid = db.Column(db.String(50))
     signal_name = db.Column(db.String(200))
@@ -18,38 +30,44 @@ class Signal(db.Model):
         self.asset_id = asset_id
         self.unit = unit
 
-    def __repr__(self):
-        return '<Signal %i>' % self.signal_id
+    def get_id(self):
+        return self.signal_id
 
 
-class Asset(db.Model):
+class Asset(db.Model, Entity):
+    """
+    Asset-entity
+    """
     asset_id = db.Column(db.Integer, primary_key=True, autoincrement=False)
     latitude = db.Column(db.Float(32, 10))
     longitude = db.Column(db.Float(32, 10))
     description = db.Column(db.String(8000))
     signals = relationship("Signal", back_populates="asset")
 
-    def __init__(self, asset_id=0, latitude=0, longitude=0, description=None):
+    def __init__(self, asset_id: int = 0, latitude: int = 0, longitude: int = 0, description: str = None):
         self.asset_id = asset_id
         self.latitude = latitude
         self.longitude = longitude
         self.description = description
 
-    def __repr__(self):
-        return '<Asset %i>' % self.asset_id
+    def get_id(self):
+        return self.asset_id
 
 
-class Measurement(db.Model):
+class Measurement(db.Model, Entity):
+    """
+    Measurement-entity
+    """
     measurement_id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.DateTime)
     signal_id = db.Column(db.Integer, db.ForeignKey('signal.signal_id'))
     signal = relationship("Signal", back_populates="measurements")
     measurement_value = db.Column(db.Float(8, 4))
 
-    def __init__(self, timestamp=None, signal_id=0, measurement_value=0):
+    def __init__(self, timestamp: datetime = None, signal_id: int = 0, measurement_value: Decimal = Decimal(0)):
         self.timestamp = timestamp
         self.signal_id = signal_id
         self.measurement_value = measurement_value
 
-    def __repr__(self):
-        return '<Measurement %i>' % self.measurement_id
+    def get_id(self):
+        return self.measurement_id

@@ -1,0 +1,49 @@
+version: '3.5'
+networks:
+  demo_network:
+    name: demo_network
+services:
+  database:
+    build: ./database
+    image: database
+    container_name: database
+    hostname: database
+    restart: always
+    networks:
+      - demo_network
+    volumes:
+      - ./data/database:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root-at-mysql
+      MYSQL_DATABASE: time_series
+    expose:
+      - 3306
+    ports:
+      - "3306:3306"
+  webservice:
+    build: ./webservice
+    image: webservice
+    container_name: webservice
+    hostname: webservice
+    restart: always
+    networks:
+      - demo_network
+    depends_on:
+      - database
+    volumes:
+      - ../time-series-api:/code
+    expose:
+      - 5000
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_APP: "manage.py"
+      FLASK_ENV: development
+      SECRET_KEY: "time_series_secret_key"
+      DB_HOST: database
+      DB_USERNAME: root
+      DB_PASSWORD: "root-at-mysql"
+      DATABASE_NAME: time_series
+      MYSQL_ROOT_PASSWORD: "root-at-mysql"
+    command: ['flask', 'run', '--host=0.0.0.0']
+    tty: true
