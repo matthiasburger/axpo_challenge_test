@@ -14,7 +14,7 @@ services:
     volumes:
       - ./data/database:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root-at-mysql
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: time_series
     expose:
       - 3306
@@ -42,8 +42,8 @@ services:
       SECRET_KEY: "time_series_secret_key"
       DB_HOST: database
       DB_USERNAME: root
-      DB_PASSWORD: "root-at-mysql"
+      DB_PASSWORD: root
       DATABASE_NAME: time_series
-      MYSQL_ROOT_PASSWORD: "root-at-mysql"
+      MYSQL_ROOT_PASSWORD: root
     command: ['flask', 'run', '--host=0.0.0.0']
     tty: true
